@@ -1,12 +1,18 @@
 import type { Liff } from "@line/liff";
 import type { NextPage } from "next";
 import Head from "next/head";
+import Image from 'next/image';
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
   liff,
   liffError
 }) => {
+  const data = liff?.getDecodedIDToken()
+
+  if (liffError) return <code>{liffError}</code>
+  if (!liff) return <div>loading...</div>
+
   return (
     <div>
       <Head>
@@ -15,28 +21,11 @@ const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1>create-liff-app</h1>
-        {liff && <p>LIFF init succeeded.</p>}
-        {liffError && (
-          <>
-            <p>LIFF init failed.</p>
-            <p>
-              <code>{liffError}</code>
-            </p>
-          </>
-        )}
-        <a
-          href="https://developers.line.biz/ja/docs/liff/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          LIFF Documentation
-        </a>
-        <h1 className="text-3xl font-bold underline">
-          {liff?.getDecodedIDToken()?.picture}
-        </h1>
-      </main>
+      <div>
+        {data?.picture ? <Image src={data.picture} alt="Profile Picture"/> : <i>No Profile Picture</i>}
+        <i>{data?.name ? data.name : "No username"}</i>
+        <i>{data?.email ? data.email : "No email"}</i>
+      </div>
     </div>
   );
 };
