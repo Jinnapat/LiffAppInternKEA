@@ -18,24 +18,9 @@ const sendResponse = (responseBody: any) => {
     }).catch((e) => {
         console.log(e)
     })
-
-    /*
-    fetch(LINE_REPLY_API, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer {' + process.env.NEXT_PUBLIC_MESSAGE_ACCESS_TOKEN + '}'
-        },
-        body: JSON.stringify(responseBody)
-    }).then(() => {
-        console.log("sended to line")
-    }).catch((e) => {
-        console.log(e)
-    })
-    */
 }
 
-const responseMessage = (event: MessageEvent, status: string) => {
+const responseMessage = (event: MessageEvent, status: string, param: string) => {
     console.log("In response message function")
     console.log(event)
     console.log(status)
@@ -54,18 +39,18 @@ const responseMessage = (event: MessageEvent, status: string) => {
     console.log(event.message.text)
 
     if (event.message.text == "คำสั่ง") {
-        responseBody.messages[0].text = "เพิ่มแปลง\nแก้ไขแปลง\nดูแปลง"
+        responseBody.messages[0].text = "เพิ่มแปลง\nแก้ไขแปลง\nดูแปลง\nรายการแปลง"
         sendResponse(responseBody)
         return
     }
 
-    if (event.message.text == "ดูแปลง") {
+    if (event.message.text == "รายการแปลง") {
         if (!event.source.userId) return
         supabase.from('plots').select("id,name").eq('created_by', event.source.userId)
         .then((res) => {
             if (res.body == null || res.body.length == 0) return
-            res.body.forEach((p) => {
-                responseBody.messages[0].text += "#" + p.id + " " + p.name + "\n"
+            res.body.forEach((p, idx) => {
+                responseBody.messages[0].text += "#" + p.id + " " + p.name + (idx < res.body.length - 1 ? "\n" : "")
             })
             sendResponse(responseBody)
         })
@@ -82,7 +67,7 @@ const responseMessage = (event: MessageEvent, status: string) => {
     }
     
     if (event.message.text == "แก้ไขแปลง") {
-        supabase.from("users").update({status: "select"}).match({userId: event.source.userId})
+        supabase.from("users").update({status: "select", param: "edit"}).match({userId: event.source.userId})
         .then(() => {
             supabase.from('plots').select("id,name").eq('created_by', event.source.userId)
             .then((res) => {
@@ -91,6 +76,22 @@ const responseMessage = (event: MessageEvent, status: string) => {
                     responseBody.messages[0].text += "#" + p.id + " " + p.name + "\n"
                 })
                 responseBody.messages[0].text += "ใส่เลข ID แปลงที่ต้องการแก้ไข"
+                sendResponse(responseBody)
+            })
+        })
+        return
+    }
+
+    if (event.message.text == "ดูแปลง") {
+        supabase.from("users").update({status: "select", param: "view"}).match({userId: event.source.userId})
+        .then(() => {
+            supabase.from('plots').select("id,name").eq('created_by', event.source.userId)
+            .then((res) => {
+                if (res.body == null || res.body.length == 0) return
+                res.body.forEach((p) => {
+                    responseBody.messages[0].text += "#" + p.id + " " + p.name + "\n"
+                })
+                responseBody.messages[0].text += "ใส่เลข ID แปลงที่ต้องการดู"
                 sendResponse(responseBody)
             })
         })
@@ -107,15 +108,15 @@ const responseMessage = (event: MessageEvent, status: string) => {
                 supabase.from("users").update({status: "free", param: ""})
                 .match({userId: event.source.userId})
                 .then(() => {
-                    responseBody.messages[0].text = "ไม่สามารถหาแปลงหมายเลข #" + requestPlotId + " ได้"
+                    responseBody.messages[0].text = "ไม่สามารถหาแปลงหมายเลข #" + requestPlotId + " ได้\nยกเลิกการแก้ไขแปลง"
                     sendResponse(responseBody)
                 })
                 
             } else {
-                supabase.from('users').update({status: "edit", param: requestPlotId})
+                supabase.from('users').update({status: param, param: requestPlotId})
                 .match({userId: event.source.userId})
                 .then(() => {
-                    responseBody.messages[0].text = "คุณสามารถแก้ไขแปลงได้ที่ https://liff.line.me/1657196472-B2M98NwJ"
+                    responseBody.messages[0].text = "คุณสามารถ" + (param == "edit" ? "แก้ไข" : "ดู") + "แปลงได้ที่ https://liff.line.me/1657196472-B2M98NwJ"
                     sendResponse(responseBody)
                 })
             }

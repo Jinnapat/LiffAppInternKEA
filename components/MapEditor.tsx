@@ -36,7 +36,8 @@ interface LeafletDrawProps {
     status: string,
     setMakeChange: Dispatch<SetStateAction<boolean>>,
     plot: string,
-    setPlot: Dispatch<SetStateAction<string>>
+    setPlot: Dispatch<SetStateAction<string>>,
+    userId: string
 }
 
 const LocateControl = () => {
@@ -89,6 +90,7 @@ const SaveControl = (props: SaveControlProps) => {
         context.closeWindow()
     }
 
+    if (props.status != "draw" && props.status != "edit") return null
     return (
         <div className="leaflet-bottom leaflet-right mb-7">
             <div className="leaflet-bar leaflet-control">
@@ -108,7 +110,7 @@ const LeafletDraw = (props: LeafletDrawProps) => {
     
     const createPolygon = (reactFGref: L.FeatureGroup | null) => {
         if (reactFGref == null) return
-        if (props.status != "edit") return
+        if (props.status != "edit" && props.status != "view") return
         const feature: FeatureCollection = JSON.parse(props.plot)
         let leafletGeoJSON = new L.GeoJSON(feature)
         let leafletFG = reactFGref
@@ -116,12 +118,15 @@ const LeafletDraw = (props: LeafletDrawProps) => {
         leafletGeoJSON.eachLayer((layer) => {
           leafletFG.addLayer(layer)
         })
+
+        if (props.status == "view") {
+            supabase.from('users').update({status: "free", param: ""}).match({userId: props.userId})
+        }
     }
     
-
     return (
         <FeatureGroup ref={(reactFGref) => createPolygon(reactFGref)}>
-            <EditControl 
+            {(props.status == "draw" || props.status == "edit") ? <EditControl 
                 position='bottomleft'
                 draw={{
                     polyline: false,
@@ -142,7 +147,7 @@ const LeafletDraw = (props: LeafletDrawProps) => {
                     props.setPlot(JSON.stringify(geojson))
                     props.setMakeChange(true)
                 }}
-            />
+            /> : null}
         </FeatureGroup>
     )
 }
@@ -163,7 +168,13 @@ const MapEditor = (props: MapEditorProps) => {
             <MapContainer className="w-full h-full" {...mapOptions}>
                 <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <LocateControl />
-                <LeafletDraw status={props.status} setMakeChange={setMakeChange} plot={props.plot} setPlot={props.setPlot}/>
+                <LeafletDraw 
+                    status={props.status} 
+                    setMakeChange={setMakeChange} 
+                    plot={props.plot} 
+                    setPlot={props.setPlot}
+                    userId={props.userId}
+                />
                 <SaveControl 
                     status={props.status}
                     makeChange={makeChange}
