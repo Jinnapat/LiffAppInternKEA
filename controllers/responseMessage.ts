@@ -4,7 +4,7 @@ import axios from 'axios'
 const LINE_REPLY_API = 'https://api.line.me/v2/bot/message/reply'
 
 const sendResponse = (responseBody: any) => {
-    
+    console.log("will send response")
     axios(LINE_REPLY_API, {
         method: "post",
         headers: {
@@ -36,6 +36,9 @@ const sendResponse = (responseBody: any) => {
 }
 
 const responseMessage = (event: MessageEvent, status: string) => {
+    console.log("In response message function")
+    console.log(event)
+    console.log(status)
     if (event.message.type != "text") return
 
     const responseBody = {

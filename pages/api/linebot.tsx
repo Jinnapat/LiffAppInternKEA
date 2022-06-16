@@ -22,13 +22,17 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     body.events.forEach((event: WebhookEvent) => {
+        console.log("handling an event")
         supabase.from('users').select("status").eq('userId', event.source.userId)
         .then((res) => {
+            console.log("got user data")
             if (res.body == null || res.body.length != 1) return
             if (event.type == "follow") addUserToDb(event)
             else if (event.type == "message" && event.message.type == "text") {
                 responseMessage(event, res.body[0].status)
             }
+        }, () => {
+            console.log("cant get user data")
         })
         
     })
