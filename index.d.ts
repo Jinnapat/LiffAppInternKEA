@@ -1,0 +1,1 @@
+declare module 'leaflet.locatecontrol/src/L.Control.Locate.js';

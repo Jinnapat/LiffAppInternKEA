@@ -1,30 +1,71 @@
 import type { Liff } from "@line/liff";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from 'next/image';
-import styles from "../styles/Home.module.css";
+import dynamic from 'next/dynamic'
+import { useState, useEffect, createContext } from "react";
+import { supabase } from "../utils/supabaseClient";
+import LoadPage from "../components/LoadPage";
+
+export const liffContext = createContext<Liff | null>(null)
+
+interface UserData {
+  status: string,
+  param: string
+}
+
+const MapEditorNoSSR = dynamic(
+  () => import('../components/MapEditor'),
+  { 
+    loading: () => <LoadPage text="loading..."/>,
+    ssr: false
+  }
+)
 
 const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
   liff,
   liffError
 }) => {
-  const data = liff?.getDecodedIDToken()
+  const [userId, setUserId] = useState('')
+  const [status, setStatus] = useState('')
+  const [param, setParam] = useState('')
+  const [plot, setPlot] = useState<string>('')
+
+  useEffect(() => {
+    liff?.getProfile()
+    .then(async (profile) => {
+      setUserId(profile.userId)
+      const { data, error } = await supabase.from('users').select('status,param').eq('userId', profile.userId)
+      if (error || data == null || data.length == 0) return
+      const userData: UserData = data[0]
+      setStatus(userData.status)
+      setParam(userData.param)
+      if (userData.status == "edit") {
+        const {data, error} = await supabase.from('plots').select('plot_bounds').eq('id', userData.param)
+        if (error || data == null || data.length == 0) return
+        setPlot(data[0].plot_bounds)
+      }
+    })
+
+    
+  }, [liff])
 
   if (liffError) return <code>{liffError}</code>
-  if (!liff) return <div>loading...</div>
+  if (!liff) return <LoadPage text="initialize..."/>
+  if (userId == '' || status == '') return <LoadPage text="loading..."/>
+  if (status == 'edit' && plot == '') <LoadPage text="getting plot data..."/>
 
   return (
     <div>
       <Head>
-        <title>LIFF App</title>
+        <title>KEA add plot</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div>
-        {data?.picture ? <Image src={data.picture} alt="Profile Picture"/> : <i>No Profile Picture</i>}
-        <i>{data?.name ? data.name : "No username"}</i>
-        <i>{data?.email ? data.email : "No email"}</i>
+      <div className="flex flex-col items-center gap-y-5">
+        <liffContext.Provider value={liff}>
+          <MapEditorNoSSR status={status} userId={userId} plot_id={param} plot={plot} setPlot={setPlot}/>
+        </liffContext.Provider>
       </div>
     </div>
   );
