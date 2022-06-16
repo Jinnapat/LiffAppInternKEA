@@ -58,7 +58,7 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
     }
     
     if (event.message.text == "เพิ่มแปลง") {
-        supabase.from("users").update({status: "draw"}).match({userId: event.source.userId})
+        supabase.from("users").update({status: "draw", param: ""}).match({userId: event.source.userId})
         .then(() => {
             responseBody.messages[0].text = "คุณสามารถเพิ่มแปลงได้ที่ https://liff.line.me/1657196472-B2M98NwJ"
             sendResponse(responseBody)
@@ -108,7 +108,7 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
                 supabase.from("users").update({status: "free", param: ""})
                 .match({userId: event.source.userId})
                 .then(() => {
-                    responseBody.messages[0].text = "ไม่สามารถหาแปลงหมายเลข #" + requestPlotId + " ได้\nยกเลิกการแก้ไขแปลง"
+                    responseBody.messages[0].text = "ไม่สามารถหาแปลงหมายเลข #" + requestPlotId + " ได้\nยกเลิกการ" + (param == "edit" ? "แก้ไข" : "ดู") + "แปลง"
                     sendResponse(responseBody)
                 })
                 

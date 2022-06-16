@@ -121,6 +121,9 @@ const LeafletDraw = (props: LeafletDrawProps) => {
 
         if (props.status == "view") {
             supabase.from('users').update({status: "free", param: ""}).match({userId: props.userId})
+            .then(() => {
+                console.log("reset status")
+            })
         }
     }
     

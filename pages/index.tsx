@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { useState, useEffect, createContext } from "react";
 import { supabase } from "../utils/supabaseClient";
 import LoadPage from "../components/LoadPage";
+import NoAction from "../components/NoAction";
 
 export const liffContext = createContext<Liff | null>(null)
 
@@ -39,7 +40,7 @@ const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
       const userData: UserData = data[0]
       setStatus(userData.status)
       setParam(userData.param)
-      if (userData.status == "edit") {
+      if (userData.status == "edit" || userData.status == "view") {
         const {data, error} = await supabase.from('plots').select('plot_bounds').eq('id', userData.param)
         if (error || data == null || data.length == 0) return
         setPlot(data[0].plot_bounds)
@@ -52,8 +53,8 @@ const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
   if (liffError) return <code>{liffError}</code>
   if (!liff) return <LoadPage text="initialize..."/>
   if (userId == '' || status == '') return <LoadPage text="loading..."/>
-  if (status == 'edit' && plot == '') <LoadPage text="getting plot data..."/>
-
+  if (status == 'edit' && plot == '') return <LoadPage text="getting plot data..."/>
+  if (status == "free") return <NoAction />
   return (
     <div>
       <Head>
