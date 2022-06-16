@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createHmac } from 'crypto';
+import { createHmac } from 'node:crypto';
 import { WebhookEvent, WebhookRequestBody } from '@line/bot-sdk'
 import addUserToDb from '../../controllers/addUserToDb';
 import responseMessage from '../../controllers/responseMessage';
