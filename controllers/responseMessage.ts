@@ -1,9 +1,25 @@
 import type { MessageEvent } from "@line/bot-sdk/lib/types"
 import { supabase } from "../utils/supabaseClient"
-
+import axios from 'axios'
 const LINE_REPLY_API = 'https://api.line.me/v2/bot/message/reply'
 
 const sendResponse = (responseBody: any) => {
+    
+    axios(LINE_REPLY_API, {
+        method: "post",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer {' + process.env.NEXT_PUBLIC_MESSAGE_ACCESS_TOKEN + '}'
+        },
+        data: JSON.stringify(responseBody)
+    })
+    .then(() => {
+        console.log("sended to line")
+    }).catch((e) => {
+        console.log(e)
+    })
+
+    /*
     fetch(LINE_REPLY_API, {
         method: "POST",
         headers: {
@@ -16,6 +32,7 @@ const sendResponse = (responseBody: any) => {
     }).catch((e) => {
         console.log(e)
     })
+    */
 }
 
 const responseMessage = (event: MessageEvent, status: string) => {
@@ -31,6 +48,8 @@ const responseMessage = (event: MessageEvent, status: string) => {
         ]
     }
     
+    console.log(event.message.text)
+
     if (event.message.text == "คำสั่ง") {
         responseBody.messages[0].text = "เพิ่มแปลง\nแก้ไขแปลง\nดูแปลง"
         sendResponse(responseBody)

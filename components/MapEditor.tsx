@@ -3,10 +3,8 @@ import type { LayerGroup, MapOptions } from 'leaflet'
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react"
 import L from 'leaflet'
 import { EditControl } from 'react-leaflet-draw'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { liffContext } from "../pages"
 import type { LayerEvent } from 'leaflet'
-import { faCheck, faClose } from "@fortawesome/free-solid-svg-icons"
 import LoadPage from './LoadPage'
 import { supabase } from '../utils/supabaseClient'
 import { FeatureCollection } from 'geojson'
