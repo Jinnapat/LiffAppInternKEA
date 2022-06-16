@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createHmac } from 'node:crypto';
 import { WebhookEvent, WebhookRequestBody } from '@line/bot-sdk'
 import addUserToDb from '../../controllers/addUserToDb';
 import responseMessage from '../../controllers/responseMessage';
 import { supabase } from '../../utils/supabaseClient';
+import hmacSHA256 from 'crypto-js/hmac-sha256';
+import Base64 from 'crypto-js/enc-base64';
 
 const channelSecret = process.env.NEXT_PUBLIC_MESSAGE_CHANNEL_SECRET as string
 
@@ -11,8 +12,8 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
     console.log(channelSecret)
 
     const body: WebhookRequestBody = req.body
-    const hmac = createHmac('SHA-256', channelSecret)
-    const signature = hmac.update(JSON.stringify(body)).digest('base64')
+    const hmac = hmacSHA256(JSON.stringify(body), channelSecret)
+    const signature = Base64.stringify(hmac)
 
     if (signature != req.headers['x-line-signature']) {
         res.status(401).send({message: "Validate Failed"})
