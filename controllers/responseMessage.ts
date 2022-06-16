@@ -11,6 +11,10 @@ const sendResponse = (responseBody: any) => {
             'Authorization': 'Bearer {' + process.env.NEXT_PUBLIC_MESSAGE_ACCESS_TOKEN + '}'
         },
         body: JSON.stringify(responseBody)
+    }).then(() => {
+        console.log("sended to line")
+    }).catch((e) => {
+        console.log(e)
     })
 }
 

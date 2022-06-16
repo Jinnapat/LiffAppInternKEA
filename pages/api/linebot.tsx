@@ -9,11 +9,12 @@ import Base64 from 'crypto-js/enc-base64';
 const channelSecret = process.env.NEXT_PUBLIC_MESSAGE_CHANNEL_SECRET as string
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
-    console.log(channelSecret)
-
     const body: WebhookRequestBody = req.body
     const hmac = hmacSHA256(JSON.stringify(body), channelSecret)
     const signature = Base64.stringify(hmac)
+
+    console.log(signature)
+    console.log(req.headers['x-line-signature'])
 
     if (signature != req.headers['x-line-signature']) {
         res.status(401).send({message: "Validate Failed"})
