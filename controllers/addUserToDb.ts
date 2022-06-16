@@ -7,8 +7,6 @@ const addUserToDb = async (event: FollowEvent) => {
         const { data, error } = await supabase.from('users').insert([{
             userId: event.source.userId
         }])
-        console.log(data)
-        console.log(error)
     }
 }
 

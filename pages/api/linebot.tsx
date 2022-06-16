@@ -5,7 +5,7 @@ import addUserToDb from '../../controllers/addUserToDb';
 import responseMessage from '../../controllers/responseMessage';
 import { supabase } from '../../utils/supabaseClient';
 
-const channelSecret = process.env.MESSAGE_CHANNEL_SECRET as string
+const channelSecret = process.env.NEXT_PUBLIC_MESSAGE_CHANNEL_SECRET as string
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
     const body: WebhookRequestBody = req.body
