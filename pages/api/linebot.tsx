@@ -8,6 +8,8 @@ import { supabase } from '../../utils/supabaseClient';
 const channelSecret = process.env.NEXT_PUBLIC_MESSAGE_CHANNEL_SECRET as string
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
+    console.log(channelSecret)
+
     const body: WebhookRequestBody = req.body
     const hmac = createHmac('SHA-256', channelSecret)
     const signature = hmac.update(JSON.stringify(body)).digest('base64')
