@@ -41,10 +41,9 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
     if (event.message.text == "คำสั่ง") {
         responseBody.messages[0].text = "เพิ่มแปลง\nแก้ไขแปลง\nดูแปลง\nรายการแปลง"
         sendResponse(responseBody)
-        return
     }
 
-    if (event.message.text == "รายการแปลง") {
+    else if (event.message.text == "รายการแปลง") {
         if (!event.source.userId) return
         supabase.from('plots').select("id,name").eq('created_by', event.source.userId)
         .then((res) => {
@@ -54,19 +53,17 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
             })
             sendResponse(responseBody)
         })
-        return
     }
     
-    if (event.message.text == "เพิ่มแปลง") {
+    else if (event.message.text == "เพิ่มแปลง") {
         supabase.from("users").update({status: "draw", param: ""}).match({userId: event.source.userId})
         .then(() => {
             responseBody.messages[0].text = "คุณสามารถเพิ่มแปลงได้ที่ https://liff.line.me/1657196472-B2M98NwJ"
             sendResponse(responseBody)
         })
-        return
     }
     
-    if (event.message.text == "แก้ไขแปลง") {
+    else if (event.message.text == "แก้ไขแปลง") {
         supabase.from("users").update({status: "select", param: "edit"}).match({userId: event.source.userId})
         .then(() => {
             supabase.from('plots').select("id,name").eq('created_by', event.source.userId)
@@ -79,10 +76,9 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
                 sendResponse(responseBody)
             })
         })
-        return
     }
 
-    if (event.message.text == "ดูแปลง") {
+    else if (event.message.text == "ดูแปลง") {
         supabase.from("users").update({status: "select", param: "view"}).match({userId: event.source.userId})
         .then(() => {
             supabase.from('plots').select("id,name").eq('created_by', event.source.userId)
@@ -95,10 +91,9 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
                 sendResponse(responseBody)
             })
         })
-        return
     }
 
-    if (status == "select") {
+    else if (status == "select") {
         const requestPlotId = event.message.text
         supabase.from('plots').select("id")
         .eq('created_by', event.source.userId)
@@ -121,7 +116,11 @@ const responseMessage = (event: MessageEvent, status: string, param: string) => 
                 })
             }
         })
-        return
+    }
+
+    else {
+        responseBody.messages[0].text = "ไม่สามารถทำคำสั่ง \"" + event.message.text + "\" ได้"
+        sendResponse(responseBody)
     }
 }
 

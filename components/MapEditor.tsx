@@ -85,8 +85,9 @@ const SaveControl = (props: SaveControlProps) => {
         context.closeWindow()
     }
 
-    const closeWindow = () => {
+    const closeWindow = async () => {
         if (context == null) return
+        await supabase.from("users").update({status: "free", param: ""}).match({userId: props.userId})
         context.closeWindow()
     }
 
@@ -107,18 +108,23 @@ const SaveControl = (props: SaveControlProps) => {
 
 const LeafletDraw = (props: LeafletDrawProps) => {
     const [drawed, setDrawed] = useState(false)
-    
+    const [createdFeature, setCreatedFeature] = useState(false)
+
     const createPolygon = (reactFGref: L.FeatureGroup | null) => {
         if (reactFGref == null) return
         if (props.status != "edit" && props.status != "view") return
+        if (createdFeature) return
+
         const feature: FeatureCollection = JSON.parse(props.plot)
         let leafletGeoJSON = new L.GeoJSON(feature)
         let leafletFG = reactFGref
-    
+
         leafletGeoJSON.eachLayer((layer) => {
           leafletFG.addLayer(layer)
         })
 
+        setCreatedFeature(true)
+        
         if (props.status == "view") {
             supabase.from('users').update({status: "free", param: ""}).match({userId: props.userId})
             .then(() => {

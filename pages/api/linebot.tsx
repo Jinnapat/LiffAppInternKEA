@@ -13,9 +13,6 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
     const hmac = hmacSHA256(JSON.stringify(body), channelSecret)
     const signature = Base64.stringify(hmac)
 
-    console.log(signature)
-    console.log(req.headers['x-line-signature'])
-
     if (signature != req.headers['x-line-signature']) {
         res.status(401).send({message: "Validate Failed"})
         return
