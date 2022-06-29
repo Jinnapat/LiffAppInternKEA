@@ -11,7 +11,8 @@ export const liffContext = createContext<Liff | null>(null)
 
 interface UserData {
   status: string,
-  param: string
+  param: string,
+  plot: string
 }
 
 const MapEditorNoSSR = dynamic(
@@ -35,16 +36,12 @@ const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
     liff?.getProfile()
     .then(async (profile) => {
       setUserId(profile.userId)
-      const { data, error } = await supabase.from('users').select('status,param').eq('userId', profile.userId)
+      const { data, error } = await supabase.from('users').select('status,param,plot').eq('userId', profile.userId)
       if (error || data == null || data.length == 0) return
       const userData: UserData = data[0]
       setStatus(userData.status)
       setParam(userData.param)
-      if (userData.status == "edit" || userData.status == "view") {
-        const {data, error} = await supabase.from('plots').select('plot_bounds').eq('id', userData.param)
-        if (error || data == null || data.length == 0) return
-        setPlot(data[0].plot_bounds)
-      }
+      setPlot(userData.plot)
     })
 
     
