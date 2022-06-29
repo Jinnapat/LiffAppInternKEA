@@ -23,7 +23,7 @@ const getNoCommand = (command: string) => {
             },
             "hero": {
                 "type": "image",
-                "url": "https://8dd7-110-164-198-126.ap.ngrok.io/query.png",
+                "url": process.env.NEXT_PUBLIC_HOST_NAME + "/query.png",
                 "offsetTop": "lg"
             },
             "body": {

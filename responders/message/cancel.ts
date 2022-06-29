@@ -30,7 +30,7 @@ const cancal = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": "https://78ef-110-164-198-126.ap.ngrok.io/cancel.png",
+                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/cancel.png",
                     "margin": "lg"
                 }]
             },

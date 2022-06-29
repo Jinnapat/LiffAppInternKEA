@@ -31,7 +31,7 @@ const editPlot = async (userData: UserData) => {
                     "layout": "vertical",
                     "contents": [{
                         "type": "image",
-                        "url": "https://78ef-110-164-198-126.ap.ngrok.io/edit-file.png",
+                        "url": process.env.NEXT_PUBLIC_HOST_NAME + "/edit-file.png",
                         "margin": "lg"
                     }]
                 },
@@ -79,7 +79,7 @@ const editPlot = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": "https://78ef-110-164-198-126.ap.ngrok.io/edit-file.png",
+                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/edit-file.png",
                     "margin": "lg"
                 }]
             },

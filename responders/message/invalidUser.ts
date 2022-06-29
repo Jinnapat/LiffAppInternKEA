@@ -23,7 +23,7 @@ const invalidUser = () => {
             },
             "hero": {
                 "type": "image",
-                "url": "https://8dd7-110-164-198-126.ap.ngrok.io/question.png",
+                "url": process.env.NEXT_PUBLIC_HOST_NAME + "/question.png",
                 "offsetTop": "lg"
             },
             "body": {

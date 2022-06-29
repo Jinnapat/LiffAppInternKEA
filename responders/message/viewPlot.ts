@@ -31,7 +31,7 @@ const viewPlot = async (userData: UserData) => {
                     "layout": "vertical",
                     "contents": [{
                         "type": "image",
-                        "url": "https://78ef-110-164-198-126.ap.ngrok.io/search.png",
+                        "url": process.env.NEXT_PUBLIC_HOST_NAME + "/search.png",
                         "margin": "lg"
                     }]
                 },
@@ -78,7 +78,7 @@ const viewPlot = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": "https://78ef-110-164-198-126.ap.ngrok.io/search.png",
+                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/search.png",
                     "margin": "lg"
                 }]
             },

@@ -67,7 +67,7 @@ const addPlot = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": "https://78ef-110-164-198-126.ap.ngrok.io/book.png",
+                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/book.png",
                     "margin": "lg"
                 }]
             },
