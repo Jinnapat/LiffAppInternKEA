@@ -67,7 +67,7 @@ const addPlot = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/book.png",
+                    "url": "https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/book.png",
                     "margin": "lg"
                 }]
             },

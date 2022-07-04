@@ -23,7 +23,7 @@ const invalidUser = () => {
             },
             "hero": {
                 "type": "image",
-                "url": process.env.NEXT_PUBLIC_HOST_NAME + "/question.png",
+                "url": "https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/question.png?t=2022-07-04T03%3A11%3A56.118Z",
                 "offsetTop": "lg"
             },
             "body": {

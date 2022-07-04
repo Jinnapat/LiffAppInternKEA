@@ -31,7 +31,7 @@ const viewPlot = async (userData: UserData) => {
                     "layout": "vertical",
                     "contents": [{
                         "type": "image",
-                        "url": process.env.NEXT_PUBLIC_HOST_NAME + "/search.png",
+                        "url": "https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/search.png?t=2022-07-04T03%3A11%3A07.197Z",
                         "margin": "lg"
                     }]
                 },
@@ -78,7 +78,7 @@ const viewPlot = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/search.png",
+                    "url": "https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/search.png?t=2022-07-04T03%3A11%3A07.197Z",
                     "margin": "lg"
                 }]
             },

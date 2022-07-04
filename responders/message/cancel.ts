@@ -30,7 +30,7 @@ const cancal = async (userData: UserData) => {
                 "layout": "vertical",
                 "contents": [{
                     "type": "image",
-                    "url": process.env.NEXT_PUBLIC_HOST_NAME + "/cancel.png",
+                    "url": "https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/cancel.png?t=2022-07-04T03%3A07%3A12.734Z",
                     "margin": "lg"
                 }]
             },

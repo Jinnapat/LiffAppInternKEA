@@ -119,10 +119,10 @@ const SaveControl = (props: SaveControlProps) => {
         <div className="leaflet-bottom leaflet-right mb-7">
             <div className="leaflet-bar leaflet-control">
                 <a onClick={saveChange} className='pt-1'>
-                    <Image src="/check.png" alt="check" width="14" height="14"/>
+                    <Image src="https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/check.png?t=2022-07-04T03%3A07%3A48.036Z" alt="check" width="14" height="14"/>
                 </a>
                 <a onClick={closeWindow} className='pt-0.5'>
-                    <Image src="/close.png" alt="close" width="12" height="12"/>
+                    <Image src="https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/close.png?t=2022-07-04T03%3A09%3A13.683Z" alt="close" width="12" height="12"/>
                 </a>
             </div>
         </div>

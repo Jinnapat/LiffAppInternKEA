@@ -23,7 +23,7 @@ const getNoCommand = (command: string) => {
             },
             "hero": {
                 "type": "image",
-                "url": process.env.NEXT_PUBLIC_HOST_NAME + "/query.png",
+                "url": "https://wihvcavkurnzpyyttghd.supabase.co/storage/v1/object/public/images/query.png?t=2022-07-04T03%3A10%3A29.878Z",
                 "offsetTop": "lg"
             },
             "body": {
