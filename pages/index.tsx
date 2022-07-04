@@ -12,7 +12,7 @@ export const liffContext = createContext<Liff | null>(null)
 interface UserData {
   status: string,
   param: string,
-  plot: string
+  plot: Object
 }
 
 const MapEditorNoSSR = dynamic(
@@ -30,7 +30,7 @@ const Home: NextPage<{ liff: Liff | null; liffError: string | null }> = ({
   const [userId, setUserId] = useState('')
   const [status, setStatus] = useState('')
   const [param, setParam] = useState('')
-  const [plot, setPlot] = useState<string>('')
+  const [plot, setPlot] = useState<Object>({})
 
   useEffect(() => {
     liff?.getProfile()

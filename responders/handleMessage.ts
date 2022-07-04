@@ -19,7 +19,9 @@ const headers = {
 export interface UserData {
     userId: string,
     plot: Object,
-    status: string
+    status: string,
+    plot_name: string,
+    area: number
 }
 
 const getResponse = async (message: TextEventMessage, dbRes: PostgrestResponse<UserData>) => {
@@ -36,7 +38,7 @@ const handleMessage = (event: MessageEvent) => {
 
     const message = event.message
 
-    supabase.from("users").select("userId,status,plot").eq("userId", event.source.userId)
+    supabase.from("users").select("userId,status,plot,plot_name,area").eq("userId", event.source.userId)
     .then(async (res) => {
         const responseMessage = {
             "replyToken": event.replyToken,

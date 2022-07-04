@@ -89,7 +89,7 @@ const viewPlot = async (userData: UserData) => {
                 "contents": [
                     {
                         "type": "text",
-                        "text": "คุณสามารถดูแปลงได้ผ่านลิงค์นี้",
+                        "text": "คุณสามารถดูแปลง \"" + userData.plot_name + "\" พื้นที่ " + userData.area + " ไร่ ได้ผ่านลิงค์นี้",
                         "wrap": true
                     },
                     {

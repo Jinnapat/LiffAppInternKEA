@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, useMap, FeatureGroup } from 'react-leaflet'
-import type { Layer, LayerGroup, MapOptions } from 'leaflet'
+import type { LayerGroup, MapOptions } from 'leaflet'
 import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react"
 import L from 'leaflet'
 import { EditControl } from 'react-leaflet-draw'
@@ -19,8 +19,8 @@ interface MapEditorProps {
     status: string,
     userId: string,
     plot_id: string,
-    plot: string,
-    setPlot: Dispatch<SetStateAction<string>>
+    plot: Object,
+    setPlot: Dispatch<SetStateAction<Object>>
 }
 
 interface SaveControlProps {
@@ -28,21 +28,22 @@ interface SaveControlProps {
     makeChange: boolean,
     setUploading: Dispatch<SetStateAction<boolean>>,
     userId: string,
-    plot: string,
+    plot: Object,
     plot_id: string
 }
 
 interface LeafletDrawProps {
     status: string,
     setMakeChange: Dispatch<SetStateAction<boolean>>,
-    plot: string,
-    setPlot: Dispatch<SetStateAction<string>>,
+    plot: Object,
+    setPlot: Dispatch<SetStateAction<Object>>,
     userId: string
 }
 
 interface UserDataUpdate {
-    plot: string,
+    plot: Object,
     plot_name ?: string,
+    area ?: number,
     status: string,
     param: string
 }
@@ -57,21 +58,34 @@ const LocateControl = () => {
 const SaveControl = (props: SaveControlProps) => {
     const context = useContext(liffContext)
 
-    const getPromptText = () => {
+    const getPromptNameText = () => {
         return "ตั้งชื่อแปลง " + (props.status == "edit" ? "(ทิ้งว่างเพื่อใช้ชื่อเดิม)" : "(ห้ามว่าง)")
+    }
+
+    const getPromptAreaText = () => {
+        return "ใส่พื้นที่แปลง (หน่วยไร่) " + (props.status == "edit" ? "(ทิ้งว่างเพื่อใช้ค่าเดิม)" : "(ห้ามว่าง)")
     }
 
     const saveChange = async () => {
         if (context == null) return
-        if (props.plot == "{}") {
+        if (Object.keys(props.plot).length == 0) {
             alert("คุณยังไม่ได้วาดแปลง")
             return
         }
-        var plot_name = prompt(getPromptText())
-        while (plot_name == '' && props.status == "draw") {
-            plot_name = prompt(getPromptText())
-        }
-        if (!props.makeChange && plot_name == '') {
+        var plot_name = ''
+        do {
+            plot_name = prompt(getPromptNameText()) as string
+            if (props.status == "edit" && plot_name == '') break
+        } while(plot_name == '')
+
+        var area: number = NaN
+        do {
+            let temp = prompt(getPromptAreaText()) as string
+            area = parseFloat(temp)
+            if (props.status == "edit" && temp == '') break
+        } while (isNaN(area))
+
+        if (!props.makeChange && plot_name == '' && isNaN(area)) {
             closeWindow()
             return
         }
@@ -83,9 +97,14 @@ const SaveControl = (props: SaveControlProps) => {
             status: "free",
             param: ""
         }
-        if (props.status == "edit" && plot_name != '') updateData.plot_name = plot_name as string
-        await supabase.from("users").update(updateData).match({userId: props.userId})
-        alert("uploaded")
+        if (props.status == "draw" || (props.status == "edit" && plot_name != ''))
+        updateData.plot_name = plot_name as string
+        if (props.status == "draw" || (props.status == "edit" && !isNaN(area)))
+        updateData.area = area
+        
+        const updateResult = await supabase.from("users").update(updateData).match({userId: props.userId})
+        if (updateResult.error) alert("An error occurred")
+        else alert("Uploaded")
         context.closeWindow()
     }
 
@@ -111,30 +130,31 @@ const SaveControl = (props: SaveControlProps) => {
 }
 
 const LeafletDraw = (props: LeafletDrawProps) => {
-
+    const [loadFG, setLoadFG] = useState(false)
     const FGref = useRef<L.FeatureGroup | null>(null)
-
-    const createPolygon = (reactFGref: L.FeatureGroup | null) => {
-        if (reactFGref == null) return
+    
+    useEffect(() => {
+        if (FGref.current == null) return
+        if (loadFG) return
         if (props.status != "edit" && props.status != "view") return
 
-        const feature: FeatureCollection = JSON.parse(props.plot)
+        const feature: FeatureCollection = props.plot as FeatureCollection
         let leafletGeoJSON = new L.GeoJSON(feature)
-        let leafletFG = reactFGref
+        let leafletFG = FGref.current
 
         leafletGeoJSON.eachLayer((layer) => {
           leafletFG.addLayer(layer)
         })
-
+        setLoadFG(true)
         if (props.status == "view") {
             supabase.from('users').update({status: "free", param: ""}).match({userId: props.userId})
             .then(() => console.log("reset status"))
         }
-    }
-    
+    }, [loadFG, props.status, props.plot, props.userId])
+
     return (
         <FeatureGroup ref={FGref}>
-            <EditControl 
+            {props.status == "draw" || props.status == "edit" ? <EditControl 
                 position='bottomleft'
                 draw={{
                     polyline: false,
@@ -148,24 +168,24 @@ const LeafletDraw = (props: LeafletDrawProps) => {
                     if (FGref == null) return
                     if (FGref.current == null) return
                     const layerGroup = data.layer as LayerGroup
-                    props.setPlot(JSON.stringify(layerGroup.toGeoJSON()))
+                    props.setPlot(layerGroup.toGeoJSON())
                     props.setMakeChange(true)
                     FGref.current.clearLayers()
                     FGref.current.addLayer(layerGroup)
                 }}
                 onEdited={(data: any) => {
-                    if (data.layers.getLayers().length == 0) props.setPlot("{}")
+                    if (data.layers.getLayers().length == 0) props.setPlot({})
                     else {
                         const geojson = data.layers.getLayers()[0].toGeoJSON()
-                        props.setPlot(JSON.stringify(geojson))
+                        props.setPlot(geojson)
                     }
                     props.setMakeChange(true)
                 }}
                 onDeleted={(data: LayerEvent) => {
-                    props.setPlot("{}")
+                    props.setPlot({})
                     props.setMakeChange(true)
                 }}
-            />
+            />: null}
         </FeatureGroup>
     )
 }
