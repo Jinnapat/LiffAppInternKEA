@@ -90,7 +90,7 @@ const editPlot = async (userData: UserData) => {
                 "contents": [
                     {
                         "type": "text",
-                        "text": "คุณสามารถแก้ไขแปลงได้ผ่านลิงค์นี้",
+                        "text": "คุณสามารถแก้ไขแปลง \"" + userData.plot_name + "\" พื้นที่ " + userData.area + " ไร่ ได้ผ่านลิงค์นี้",
                         "wrap": true
                     },
                     {
